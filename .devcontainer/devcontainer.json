@@ -9,7 +9,6 @@
     }
   },
   "containerEnv": {
-    "VSCODE_IBMI_SANDBOX": "true",
-    "SANDBOX_SERVER": "idevphp.idevcloud.com"
+    "VSCODE_IBMI_SANDBOX": "true"
   }
 }
