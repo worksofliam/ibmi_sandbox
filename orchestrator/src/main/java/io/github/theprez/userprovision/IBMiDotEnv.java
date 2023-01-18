@@ -22,7 +22,7 @@ public class IBMiDotEnv {
         if (null != s_dotEnv) {
             return s_dotEnv;
         }
-        String cwd = System.getProperty("user.dir", ".");
+        final String cwd = System.getProperty("user.dir", ".");
         final Dotenv dotenv = Dotenv.configure().directory(cwd).ignoreIfMalformed().ignoreIfMissing().load();
         return s_dotEnv = dotenv;
     }
