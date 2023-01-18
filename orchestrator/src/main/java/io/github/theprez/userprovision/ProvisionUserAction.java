@@ -288,8 +288,8 @@ public class ProvisionUserAction {
                 err("This user profile is not allowed to be deleted");
             }
             final String branch = host + "/" + usrprf;
-            createOrDeleteGHBranch(ret, as400, branch, false);
             runCmdWithErrorCheck(ret, as400, "DLTUSRPRF USRPRF(" + usrprf + ") OWNOBJOPT(*DLT)");
+            createOrDeleteGHBranch(ret, as400, branch, false);
         } finally {
             as400.disconnectAllServices();
         }
