@@ -1,22 +1,52 @@
 /* Carrd Site JS | carrd.co | License: MIT */
 
+let connectionDetails = {
+	codespaceUri: undefined,
+	branch: undefined,
+	server: undefined,
+	username: undefined,
+	password: undefined,
+}
+
+function goOnline() {
+	window.location.hash = "goonline";
+}
+
+function loading() {
+	window.location.hash = "loading";
+}
+
 (function() {
 
 	var ele = document.getElementById(`form01`);
 	ele.addEventListener("submit", function(e) {
 		e.preventDefault(); //stop form from submitting
 
+		loading();
+
 		let xmlHttpReq = new XMLHttpRequest();
 		xmlHttpReq.onreadystatechange = function () {
 			if (xmlHttpReq.readyState == 4 && xmlHttpReq.status == 200) {
 				console.log(JSON.parse(xmlHttpReq.responseText));
 				const data = JSON.parse(xmlHttpReq.responseText);
+				console.log(data);
+
 				const branch = data.branch;
 
-				window.location.href = `https://github.com/codespaces/new?machine=basicLinux32gb&repo=587978251&ref=${branch}&devcontainer_path=.devcontainer%2Fdevcontainer.json`;
+				document.getElementById("button-codespaces").href = `https://github.com/codespaces/new?machine=basicLinux32gb&repo=587978251&ref=${branch}&devcontainer_path=.devcontainer%2Fdevcontainer.json`;
+
+				const server = window.location.host.length > 0 ? window.location.host : `idevphp.idevcloud.com`;
+				const user = data.usrprf;
+				const password = btoa(data.password);
+
+				console.log(`'${window.location.host}'`);
+
+				document.getElementById("button-local").href = `vscode://halcyontechltd.code-for-ibmi/connect?server=${encodeURIComponent(server)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(password)}`;
+
+				goOnline();
 			}
 		};
-		xmlHttpReq.open("GET", `/api/create`, true); // true for asynchronous
+		xmlHttpReq.open("GET", `http://idevphp.idevcloud.com:12080/api/create?base=junk`, true); // true for asynchronous
 		xmlHttpReq.send(null);
 	});
 
@@ -453,12 +483,617 @@
 	
 				setTimeout(function() {
 					$body.className = $body.className.replace(/\bis-playing\b/, 'is-ready');
-				}, 2500);
+				}, 6250);
 			}, 100);
 		});
 	
-	// Load elements (if needed).
-		loadElements(document.body);
+	// Sections.
+		(function() {
+	
+			var initialSection, initialScrollPoint, initialId,
+				header, footer, name, hideHeader, hideFooter, disableAutoScroll,
+				h, e, ee, k,
+				locked = false,
+				scrollPointParent = function(target) {
+	
+					var target;
+	
+					target = event.target;
+	
+					while (target) {
+	
+						if (target.parentElement
+						&&	target.parentElement.tagName == 'SECTION')
+							break;
+	
+						target = target.parentElement;
+	
+					}
+	
+					return target;
+	
+				},
+				doNextScrollPoint = function(event) {
+	
+					var e, target, id;
+	
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+	
+					// Determine parent element.
+						e = scrollPointParent(event.target);
+	
+						if (!e)
+							return;
+	
+					// Find next scroll point.
+						while (e && e.nextElementSibling) {
+	
+							e = e.nextElementSibling;
+	
+							if (e.dataset.scrollId) {
+	
+								target = e;
+								id = e.dataset.scrollId;
+								break;
+	
+							}
+	
+						}
+	
+						if (!target
+						||	!id)
+							return;
+	
+					// Redirect.
+						if (target.dataset.scrollInvisible == '1')
+							scrollToElement(target);
+						else
+							location.href = '#' + id;
+	
+				},
+				doPreviousScrollPoint = function(e) {
+	
+					var e, target, id;
+	
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+	
+					// Determine parent element.
+						e = scrollPointParent(event.target);
+	
+						if (!e)
+							return;
+	
+					// Find previous scroll point.
+						while (e && e.previousElementSibling) {
+	
+							e = e.previousElementSibling;
+	
+							if (e.dataset.scrollId) {
+	
+								target = e;
+								id = e.dataset.scrollId;
+								break;
+	
+							}
+	
+						}
+	
+						if (!target
+						||	!id)
+							return;
+	
+					// Redirect.
+						if (target.dataset.scrollInvisible == '1')
+							scrollToElement(target);
+						else
+							location.href = '#' + id;
+	
+				},
+				doFirstScrollPoint = function(e) {
+	
+					var e, target, id;
+	
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+	
+					// Determine parent element.
+						e = scrollPointParent(event.target);
+	
+						if (!e)
+							return;
+	
+					// Find first scroll point.
+						while (e && e.previousElementSibling) {
+	
+							e = e.previousElementSibling;
+	
+							if (e.dataset.scrollId) {
+	
+								target = e;
+								id = e.dataset.scrollId;
+	
+							}
+	
+						}
+	
+						if (!target
+						||	!id)
+							return;
+	
+					// Redirect.
+						if (target.dataset.scrollInvisible == '1')
+							scrollToElement(target);
+						else
+							location.href = '#' + id;
+	
+				},
+				doLastScrollPoint = function(e) {
+	
+					var e, target, id;
+	
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+	
+					// Determine parent element.
+						e = scrollPointParent(event.target);
+	
+						if (!e)
+							return;
+	
+					// Find last scroll point.
+						while (e && e.nextElementSibling) {
+	
+							e = e.nextElementSibling;
+	
+							if (e.dataset.scrollId) {
+	
+								target = e;
+								id = e.dataset.scrollId;
+	
+							}
+	
+						}
+	
+						if (!target
+						||	!id)
+							return;
+	
+					// Redirect.
+						if (target.dataset.scrollInvisible == '1')
+							scrollToElement(target);
+						else
+							location.href = '#' + id;
+	
+				},
+				doNextSection = function() {
+	
+					var section;
+	
+					section = $('#main > .inner > section.active').nextElementSibling;
+	
+					if (!section || section.tagName != 'SECTION')
+						return;
+	
+					location.href = '#' + section.id.replace(/-section$/, '');
+	
+				},
+				doPreviousSection = function() {
+	
+					var section;
+	
+					section = $('#main > .inner > section.active').previousElementSibling;
+	
+					if (!section || section.tagName != 'SECTION')
+						return;
+	
+					location.href = '#' + (section.matches(':first-child') ? '' : section.id.replace(/-section$/, ''));
+	
+				},
+				doFirstSection = function() {
+	
+					var section;
+	
+					section = $('#main > .inner > section:first-of-type');
+	
+					if (!section || section.tagName != 'SECTION')
+						return;
+	
+					location.href = '#' + section.id.replace(/-section$/, '');
+	
+				},
+				doLastSection = function() {
+	
+					var section;
+	
+					section = $('#main > .inner > section:last-of-type');
+	
+					if (!section || section.tagName != 'SECTION')
+						return;
+	
+					location.href = '#' + section.id.replace(/-section$/, '');
+	
+				},
+				sections = {};
+	
+	
+			// Expose doNextScrollPoint, doPreviousScrollPoint, doFirstScrollPoint, doLastScrollPoint.
+				window._nextScrollPoint = doNextScrollPoint;
+				window._previousScrollPoint = doPreviousScrollPoint;
+				window._firstScrollPoint = doFirstScrollPoint;
+				window._lastScrollPoint = doLastScrollPoint;
+	
+			// Expose doNextSection, doPreviousSection, doFirstSection, doLastSection.
+				window._nextSection = doNextSection;
+				window._previousSection = doPreviousSection;
+				window._firstSection = doFirstSection;
+				window._lastSection = doLastSection;
+	
+			// Override exposed scrollToTop.
+				window._scrollToTop = function() {
+	
+					var section, id;
+	
+					// Scroll to top.
+						scrollToElement(null);
+	
+					// Section active?
+						if (!!(section = $('section.active'))) {
+	
+							// Get name.
+								id = section.id.replace(/-section$/, '');
+	
+								// Index section? Clear.
+									if (id == 'home')
+										id = '';
+	
+							// Reset hash to section name (via new state).
+								history.pushState(null, null, '#' + id);
+	
+						}
+	
+				};
+	
+			// Initialize.
+	
+				// Set scroll restoration to manual.
+					if ('scrollRestoration' in history)
+						history.scrollRestoration = 'manual';
+	
+				// Header, footer.
+					header = $('#header');
+					footer = $('#footer');
+	
+				// Show initial section.
+	
+					// Determine target.
+						h = thisHash();
+	
+						// Contains invalid characters? Might be a third-party hashbang, so ignore it.
+							if (h
+							&&	!h.match(/^[a-zA-Z0-9\-]+$/))
+								h = null;
+	
+						// Scroll point.
+							if (e = $('[data-scroll-id="' + h + '"]')) {
+	
+								initialScrollPoint = e;
+								initialSection = initialScrollPoint.parentElement;
+								initialId = initialSection.id;
+	
+							}
+	
+						// Section.
+							else if (e = $('#' + (h ? h : 'home') + '-section')) {
+	
+								initialScrollPoint = null;
+								initialSection = e;
+								initialId = initialSection.id;
+	
+							}
+	
+						// Missing initial section?
+							if (!initialSection) {
+	
+								// Default to index.
+									initialScrollPoint = null;
+									initialSection = $('#' + 'home' + '-section');
+									initialId = initialSection.id;
+	
+								// Clear index URL hash.
+									history.replaceState(undefined, undefined, '#');
+	
+							}
+	
+					// Get options.
+						name = (h ? h : 'home');
+						hideHeader = name ? ((name in sections) && ('hideHeader' in sections[name]) && sections[name].hideHeader) : false;
+						hideFooter = name ? ((name in sections) && ('hideFooter' in sections[name]) && sections[name].hideFooter) : false;
+						disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll' in sections[name]) && sections[name].disableAutoScroll) : false;
+	
+					// Deactivate all sections (except initial).
+	
+						// Initially hide header and/or footer (if necessary).
+	
+							// Header.
+								if (header && hideHeader) {
+	
+									header.classList.add('hidden');
+									header.style.display = 'none';
+	
+								}
+	
+							// Footer.
+								if (footer && hideFooter) {
+	
+									footer.classList.add('hidden');
+									footer.style.display = 'none';
+	
+								}
+	
+						// Deactivate.
+							ee = $$('#main > .inner > section:not([id="' + initialId + '"])');
+	
+							for (k = 0; k < ee.length; k++) {
+	
+								ee[k].className = 'inactive';
+								ee[k].style.display = 'none';
+	
+							}
+	
+					// Activate initial section.
+						initialSection.classList.add('active');
+	
+					// Load elements.
+						loadElements(initialSection);
+	
+						if (header)
+							loadElements(header);
+	
+						if (footer)
+							loadElements(footer);
+	
+					// Scroll to top (if not disabled for this section).
+						if (!disableAutoScroll)
+							scrollToElement(null, 'instant');
+	
+				// Load event.
+					on('load', function() {
+	
+						// Scroll to initial scroll point (if applicable).
+					 		if (initialScrollPoint)
+								scrollToElement(initialScrollPoint, 'instant');
+	
+					});
+	
+			// Hashchange event.
+				on('hashchange', function(event) {
+	
+					var section, scrollPoint, id, sectionHeight, currentSection, currentSectionHeight,
+						name, hideHeader, hideFooter, disableAutoScroll,
+						h, e, ee, k;
+	
+					// Lock.
+						if (locked)
+							return false;
+	
+					// Determine target.
+						h = thisHash();
+	
+						// Contains invalid characters? Might be a third-party hashbang, so ignore it.
+							if (h
+							&&	!h.match(/^[a-zA-Z0-9\-]+$/))
+								return false;
+	
+						// Scroll point.
+							if (e = $('[data-scroll-id="' + h + '"]')) {
+	
+								scrollPoint = e;
+								section = scrollPoint.parentElement;
+								id = section.id;
+	
+							}
+	
+						// Section.
+							else if (e = $('#' + (h ? h : 'home') + '-section')) {
+	
+								scrollPoint = null;
+								section = e;
+								id = section.id;
+	
+							}
+	
+						// Anything else.
+							else {
+	
+								// Default to index.
+									scrollPoint = null;
+									section = $('#' + 'home' + '-section');
+									id = section.id;
+	
+								// Clear index URL hash.
+									history.replaceState(undefined, undefined, '#');
+	
+							}
+	
+					// No section? Bail.
+						if (!section)
+							return false;
+	
+					// Section already active?
+						if (!section.classList.contains('inactive')) {
+	
+							// Get options.
+								name = (section ? section.id.replace(/-section$/, '') : null);
+								disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll' in sections[name]) && sections[name].disableAutoScroll) : false;
+	
+						 	// Scroll to scroll point (if applicable).
+						 		if (scrollPoint)
+									scrollToElement(scrollPoint);
+	
+							// Otherwise, just scroll to top (if not disabled for this section).
+								else if (!disableAutoScroll)
+									scrollToElement(null);
+	
+							// Bail.
+								return false;
+	
+						}
+	
+					// Otherwise, activate it.
+						else {
+	
+							// Lock.
+								locked = true;
+	
+							// Clear index URL hash.
+								if (location.hash == '#home')
+									history.replaceState(null, null, '#');
+	
+							// Get options.
+								name = (section ? section.id.replace(/-section$/, '') : null);
+								disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll' in sections[name]) && sections[name].disableAutoScroll) : false;
+	
+							// Deactivate current section.
+								currentSection = $('section:not(.inactive)');
+	
+								if (currentSection) {
+	
+									// Deactivate.
+										currentSection.classList.add('inactive');
+	
+									// Unload elements.
+										unloadElements(currentSection);
+	
+									// Hide.
+										setTimeout(function() {
+											currentSection.style.display = 'none';
+											currentSection.classList.remove('active');
+										}, 125);
+	
+								}
+	
+							// Activate target section.
+								setTimeout(function() {
+	
+									// Show.
+										section.style.display = '';
+	
+									// Trigger 'resize' event.
+										trigger('resize');
+	
+									// Scroll to top (if not disabled for this section).
+										if (!disableAutoScroll)
+											scrollToElement(null, 'instant');
+	
+									// Delay.
+										setTimeout(function() {
+	
+											// Activate.
+												section.classList.remove('inactive');
+												section.classList.add('active');
+	
+											// Delay.
+												setTimeout(function() {
+	
+													// Load elements.
+														loadElements(section);
+	
+												 	// Scroll to scroll point (if applicable).
+												 		if (scrollPoint)
+															scrollToElement(scrollPoint, 'instant');
+	
+													// Unlock.
+														locked = false;
+	
+												}, 250);
+	
+										}, 75);
+	
+								}, 125);
+	
+						}
+	
+					return false;
+	
+				});
+	
+				// Hack: Allow hashchange to trigger on click even if the target's href matches the current hash.
+					on('click', function(event) {
+	
+						var t = event.target,
+							tagName = t.tagName.toUpperCase(),
+							scrollPoint;
+	
+						// Find real target.
+							switch (tagName) {
+	
+								case 'IMG':
+								case 'SVG':
+								case 'USE':
+								case 'U':
+								case 'STRONG':
+								case 'EM':
+								case 'CODE':
+								case 'S':
+								case 'MARK':
+								case 'SPAN':
+	
+									// Find ancestor anchor tag.
+										while ( !!(t = t.parentElement) )
+											if (t.tagName == 'A')
+												break;
+	
+									// Not found? Bail.
+										if (!t)
+											return;
+	
+									break;
+	
+								default:
+									break;
+	
+							}
+	
+						// Target is an anchor *and* its href is a hash?
+							if (t.tagName == 'A'
+							&&	t.getAttribute('href').substr(0, 1) == '#') {
+	
+								// Hash matches an invisible scroll point?
+									if (!!(scrollPoint = $('[data-scroll-id="' + t.hash.substr(1) + '"][data-scroll-invisible="1"]'))) {
+	
+										// Prevent default.
+											event.preventDefault();
+	
+										// Scroll to element.
+											scrollToElement(scrollPoint);
+	
+									}
+	
+								// Hash matches the current hash?
+									else if (t.hash == window.location.hash) {
+	
+										// Prevent default.
+											event.preventDefault();
+	
+										// Replace state with '#'.
+											history.replaceState(undefined, undefined, '#');
+	
+										// Replace location with target hash.
+											location.replace(t.hash);
+	
+									}
+	
+							}
+	
+					});
+	
+		})();
 	
 	// Browser hacks.
 	
@@ -586,5 +1221,316 @@
 					$body.classList.add('is-touch');
 	
 			}
+	
+		var scrollEvents = {
+	
+			/**
+			 * Items.
+			 * @var {array}
+			 */
+			items: [],
+	
+			/**
+			 * Adds an event.
+			 * @param {object} o Options.
+			 */
+			add: function(o) {
+	
+				this.items.push({
+					element: o.element,
+					triggerElement: (('triggerElement' in o && o.triggerElement) ? o.triggerElement : o.element),
+					enter: ('enter' in o ? o.enter : null),
+					leave: ('leave' in o ? o.leave : null),
+					mode: ('mode' in o ? o.mode : 3),
+					offset: ('offset' in o ? o.offset : 0),
+					initialState: ('initialState' in o ? o.initialState : null),
+					state: false,
+				});
+	
+			},
+	
+			/**
+			 * Handler.
+			 */
+			handler: function() {
+	
+				var	height, top, bottom, scrollPad;
+	
+				// Determine values.
+					if (client.os == 'ios') {
+	
+						height = document.documentElement.clientHeight;
+						top = document.body.scrollTop + window.scrollY;
+						bottom = top + height;
+						scrollPad = 125;
+	
+					}
+					else {
+	
+						height = document.documentElement.clientHeight;
+						top = document.documentElement.scrollTop;
+						bottom = top + height;
+						scrollPad = 0;
+	
+					}
+	
+				// Step through items.
+					scrollEvents.items.forEach(function(item) {
+	
+						var bcr, elementTop, elementBottom, state, a, b;
+	
+						// No enter/leave handlers? Bail.
+							if (!item.enter
+							&&	!item.leave)
+								return true;
+	
+						// No trigger element, or not visible? Bail.
+							if (!item.triggerElement
+							||	item.triggerElement.offsetParent === null)
+								return true;
+	
+						// Get element position.
+							bcr = item.triggerElement.getBoundingClientRect();
+							elementTop = top + Math.floor(bcr.top);
+							elementBottom = elementTop + bcr.height;
+	
+						// Determine state.
+	
+							// Initial state exists?
+								if (item.initialState !== null) {
+	
+									// Use it for this check.
+										state = item.initialState;
+	
+									// Clear it.
+										item.initialState = null;
+	
+								}
+	
+							// Otherwise, determine state from mode/position.
+								else {
+	
+									switch (item.mode) {
+	
+										// Element falls within viewport.
+											case 1:
+											default:
+	
+												// State.
+													state = (bottom > (elementTop - item.offset) && top < (elementBottom + item.offset));
+	
+												break;
+	
+										// Viewport midpoint falls within element.
+											case 2:
+	
+												// Midpoint.
+													a = (top + (height * 0.5));
+	
+												// State.
+													state = (a > (elementTop - item.offset) && a < (elementBottom + item.offset));
+	
+												break;
+	
+										// Viewport midsection falls within element.
+											case 3:
+	
+												// Upper limit (25%-).
+													a = top + (height * 0.25);
+	
+													if (a - (height * 0.375) <= 0)
+														a = 0;
+	
+												// Lower limit (-75%).
+													b = top + (height * 0.75);
+	
+													if (b + (height * 0.375) >= document.body.scrollHeight - scrollPad)
+														b = document.body.scrollHeight + scrollPad;
+	
+												// State.
+													state = (b > (elementTop - item.offset) && a < (elementBottom + item.offset));
+	
+												break;
+	
+									}
+	
+								}
+	
+						// State changed?
+							if (state != item.state) {
+	
+								// Update state.
+									item.state = state;
+	
+								// Call handler.
+									if (item.state) {
+	
+										// Enter handler exists?
+											if (item.enter) {
+	
+												// Call it.
+													(item.enter).apply(item.element);
+	
+												// No leave handler? Unbind enter handler (so we don't check this element again).
+													if (!item.leave)
+														item.enter = null;
+	
+											}
+	
+									}
+									else {
+	
+										// Leave handler exists?
+											if (item.leave) {
+	
+												// Call it.
+													(item.leave).apply(item.element);
+	
+												// No enter handler? Unbind leave handler (so we don't check this element again).
+													if (!item.enter)
+														item.leave = null;
+	
+											}
+	
+									}
+	
+							}
+	
+					});
+	
+			},
+	
+			/**
+			 * Initializes scroll events.
+			 */
+			init: function() {
+	
+				// Bind handler to events.
+					on('load', this.handler);
+					on('resize', this.handler);
+					on('scroll', this.handler);
+	
+				// Do initial handler call.
+					(this.handler)();
+	
+			}
+		};
+	
+		// Initialize.
+			scrollEvents.init();
+	
+	// Deferred.
+		(function() {
+	
+			var items = $$('.deferred'),
+				loadHandler, enterHandler;
+	
+			// Handlers.
+	
+				/**
+				 * "On Load" handler.
+				 */
+				loadHandler = function() {
+	
+					var i = this,
+						p = this.parentElement;
+	
+					// Not "done" yet? Bail.
+						if (i.dataset.src !== 'done')
+							return;
+	
+					// Show image.
+						if (Date.now() - i._startLoad < 375) {
+	
+							p.classList.remove('loading');
+							p.style.backgroundImage = 'none';
+							i.style.transition = '';
+							i.style.opacity = 1;
+	
+						}
+						else {
+	
+							p.classList.remove('loading');
+							i.style.opacity = 1;
+	
+							setTimeout(function() {
+								i.style.backgroundImage = 'none';
+								i.style.transition = '';
+							}, 375);
+	
+						}
+	
+				};
+	
+				/**
+				 * "On Enter" handler.
+				 */
+				enterHandler = function() {
+	
+					var	i = this,
+						p = this.parentElement,
+						src;
+	
+					// Get src, mark as "done".
+						src = i.dataset.src;
+						i.dataset.src = 'done';
+	
+					// Mark parent as loading.
+						p.classList.add('loading');
+	
+					// Swap placeholder for real image src.
+						i._startLoad = Date.now();
+						i.src = src;
+	
+				};
+	
+			// Initialize items.
+				items.forEach(function(p) {
+	
+					var i = p.firstElementChild;
+	
+					// Set parent to placeholder.
+						if (!p.classList.contains('enclosed')) {
+	
+							p.style.backgroundImage = 'url(' + i.src + ')';
+							p.style.backgroundSize = '100% 100%';
+							p.style.backgroundPosition = 'top left';
+							p.style.backgroundRepeat = 'no-repeat';
+	
+						}
+	
+					// Hide image.
+						i.style.opacity = 0;
+						i.style.transition = 'opacity 0.375s ease-in-out';
+	
+					// Load event.
+						i.addEventListener('load', loadHandler);
+	
+					// Add to scroll events.
+						scrollEvents.add({
+							element: i,
+							enter: enterHandler,
+							offset: 250,
+						});
+	
+				});
+	
+		})();
+	
+	// Buttons: buttons02.
+		$('#buttons02 > li:nth-child(1) > a').addEventListener(
+			'click',
+			function(event) { 
+				console.log('boxA')
+			}
+		);
+	
+	// Buttons: buttons01.
+		$('#buttons01 > li:nth-child(1) > a').addEventListener(
+			'click',
+			function(event) { 
+				console.log('boxB')
+			}
+		);
 
 })();

@@ -9,7 +9,7 @@
 		<meta property="og:title" content="IBM i Sandbox" />
 		<meta property="og:type" content="website" />
 		<meta property="og:description" content="Sandbox coolness" />
-		<link href="https://fonts.googleapis.com/css?display=swap&family=Space+Mono:400,400italic" rel="stylesheet" type="text/css" />
+		<link href="https://fonts.googleapis.com/css?display=swap&family=Space+Mono:400,400italic,700,700italic" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" href="assets/main.css" />
 		<noscript><link rel="stylesheet" href="assets/noscript.css" /></noscript>
 	</head>
@@ -17,34 +17,73 @@
 		<div id="wrapper">
 			<div id="main">
 				<div class="inner">
-					<div id="columns01" class="container default">
-						<div class="wrapper">
-							<div class="inner">
-								<div id="image01" class="image">
-									<span class="frame"><img src="assets/images/image01.png" alt="" /></span>
-								</div>
-								<h1 id="text03">IBM i Sandbox</h1>
-								<p id="text06">Access this IBM i sandbox and a full instance of Visual Studio Code in the browser by providing your email. You will be redirected to create a GitHub Codespace. You will be automatically connected to an IBM i with a unique profile.</p>
-							</div>
-						</div>
-					</div>
-					<div id="columns02" class="container default">
-						<div class="wrapper">
-							<div class="inner">
-								<form id="form01" method="post" action="#" data-autofocus="1">
-									<div class="inner">
-										<div class="field">
-											<input type="email" name="email" id="form01-email" placeholder="Your email address" maxlength="128" required />
-										</div>
-										<div class="actions">
-											<button type="submit">Spin up Sandbox</button>
-										</div>
+					<section id="home-section">
+						<div id="columns01" class="container default">
+							<div class="wrapper">
+								<div class="inner">
+									<div id="image02" class="image">
+										<span class="frame"><img src="assets/images/image02.png" alt="" /></span>
 									</div>
-								</form>
-								<p id="text05">This is a shared system. Don&#039;t ruin the fun. GitHub Account is required. <a href="https://github.com/features/codespaces">GitHub Codespaces</a> are free for up to 60 hours a month.</p>
+									<h1 id="text07">IBM i Sandbox</h1>
+									<p id="text01">Access this IBM i sandbox and a full instance of Visual Studio Code in the browser by providing your email. You will be redirected to create a GitHub Codespace. You will be automatically connected to an IBM i with a unique profile.</p>
+								</div>
 							</div>
 						</div>
-					</div>
+						<div id="columns02" class="container default">
+							<div class="wrapper">
+								<div class="inner">
+									<form enctype="multipart/form-data" id="form01" method="post" action="#" data-autofocus="1">
+										<div class="inner">
+											<div class="field">
+												<input type="email" name="email" id="form01-email" placeholder="Your email address" maxlength="128" required />
+											</div>
+											<div class="actions">
+												<button type="submit">Spin up Sandbox</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<p id="text05">This is a shared system. Don&#039;t ruin the fun.</p>
+					</section>
+					<section id="loading-section">
+						<div id="container02" class="container default">
+							<div class="wrapper">
+								<div class="inner">
+									<div id="image01" class="image">
+										<span class="frame deferred"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjAiIHk9IjAiIHZpZXdCb3g9IjAgMCA0MjAgNDIwIiB3aWR0aD0iNDIwIiBoZWlnaHQ9IjQyMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI%2BPHJlY3QgZmlsbD0idHJhbnNwYXJlbnQiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiLz48L3N2Zz4%3D" data-src="assets/images/image01.png" alt="" /></span>
+									</div>
+									<h1 id="text03">Loading..</h1>
+								</div>
+							</div>
+						</div>
+					</section>
+					<section id="goonline-section">
+						<div id="container01" class="container default">
+							<div class="wrapper">
+								<div class="inner">
+									<p id="text02">How do you want to connect to this system?</p>
+									<hr id="divider01">
+									<h2 id="text09"><strong>Codespaces</strong></h2>
+									<p id="text04">Opening in Codespaces will redirect to GitHub where you can create a new Codespace. It will automatically connect to the Sandbox after initialisation.</p>
+									<ul id="buttons02" class="buttons">
+										<li>
+											<a id="button-codespaces" href="" class="button n01">Open in Codespaces</a>
+										</li>
+									</ul>
+									<hr id="divider02">
+									<h2 id="text08"><strong>Visual Studio Code</strong></h2>
+									<p id="text06">Or you can connect to the Sandbox through your local installation of Visual Studio Code. For this method to work, you need the Code for IBM i extension installed.</p>
+									<ul id="buttons01" class="buttons">
+										<li>
+											<a id="button-local" href="" class="button n01">Open in Visual Studio Code locally</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</section>
 				</div>
 			</div>
 		</div>
