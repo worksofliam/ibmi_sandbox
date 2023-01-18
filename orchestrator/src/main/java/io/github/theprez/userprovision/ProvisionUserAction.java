@@ -43,22 +43,28 @@ public class ProvisionUserAction {
     private static final int BASE_USER_PORT_NUM = 16000;
     private static String USRPRF_PREFIX = "SNDBX";
 
-    private static void createOrDeleteGHBranch(final Map<String, Object> _resultsMap, final AS400 _as400, final String _branch, final boolean _isCreate) throws SQLException, IOException {
+    private static void createOrDeleteGHBranch(final Map<String, Object> _resultsMap, final AS400 _as400, final String _branch, final boolean _isCreate) throws IOException {
 
         final String sha = IBMiDotEnv.getDotEnv().get("SANDBOX_SHA", "3586a15cba3158bfc12219f188784f06f4f1c4ac");
         final String token = IBMiDotEnv.getDotEnv().get("SANDBOX_TOKEN");
         if (StringUtils.isEmpty(token)) {
             err("GitHub token not configured");
         }
-        if (_isCreate) {
-            final String body = String.format("{\"ref\": \"refs/heads/%s\",\"sha\": \"%s\"}", _branch, sha);
-            final String url = "https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs";
-            new HttpRequestor().post(true, url, body, "Authorization", "token " + token);
-        } else {
-            final String url = String.format("https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs/heads/%s", _branch);
-            new HttpRequestor().delete(true, url, "Authorization", "token " + token);
+        try {
+            if (_isCreate) {
+                final String body = String.format("{\"ref\": \"refs/heads/%s\",\"sha\": \"%s\"}", _branch, sha);
+                final String url = "https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs";
+                new HttpRequestor().post(true, url, body, "Authorization", "token " + token);
+            } else {
+                final String url = String.format("https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs/heads/%s", _branch);
+                new HttpRequestor().delete(true, url, "Authorization", "token " + token);
+            }
+            _resultsMap.put("branch", _branch);
+            _resultsMap.put("gh_success", true);
+        }catch(IOException e) {
+            _resultsMap.put("gh_success", false);
+            _resultsMap.put("gh_response", e.getMessage());
         }
-        _resultsMap.put("branch", _branch);
     }
 
     private static synchronized Map<String, Object> createUser(final AS400 _as400, final String _email, final String _host) throws Exception {
