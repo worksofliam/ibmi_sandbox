@@ -64,6 +64,7 @@ public class ProvisionUserAction {
     private static synchronized Map<String, Object> createUser(final AS400 _as400, final String _email, final String _host) throws Exception {
         final LinkedHashMap<String, Object> ret = new LinkedHashMap<String, Object>();
         final String user = getUser(_as400);
+        ret.put("hostname", _host);
         ret.put("usrprf", user);
         final String desc = StringUtils.isNonEmpty(_email) ? _email : "Anonymous coward";
         ret.put("description", desc);
