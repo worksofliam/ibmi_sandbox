@@ -44,9 +44,14 @@ function loading() {
 				document.getElementById("button-local").href = `vscode://halcyontechltd.code-for-ibmi/connect?server=${encodeURIComponent(server)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(password)}`;
 
 				goOnline();
+			} else if (xmlHttpReq.readyState == 4) {
+				console.log(`Backend API call failed. status is '${xmlHttpReq.status}'`);
+				alert('Sorry, an error occurred');
+				window.location.href = `http://${window.location.host}`;
 			}
 		};
-		xmlHttpReq.open("GET", `http://idevphp.idevcloud.com:12080/api/create?base=junk`, true); // true for asynchronous
+		let email = document.getElementById('form01-email').value;
+		xmlHttpReq.open("GET", `/api/create?email=${email}`, true); // true for asynchronous
 		xmlHttpReq.send(null);
 	});
 
