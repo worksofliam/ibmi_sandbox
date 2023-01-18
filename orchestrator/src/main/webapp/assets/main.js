@@ -35,7 +35,7 @@ function loading() {
 
 				document.getElementById("button-codespaces").href = `https://github.com/codespaces/new?machine=basicLinux32gb&repo=587978251&ref=${branch}&devcontainer_path=.devcontainer%2Fdevcontainer.json`;
 
-				const server = window.location.host.length > 0 ? window.location.host : `idevphp.idevcloud.com`;
+				const server = data.hostname;
 				const user = data.usrprf;
 				const password = btoa(data.password);
 
