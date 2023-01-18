@@ -127,7 +127,7 @@ public class ProvisionUserAction {
     }
 
     private static void err(final String _str) {
-        err(_str);
+        throw new RuntimeException(_str);
     }
 
     private static String getPassword(final AS400 as400, final String user) {
@@ -256,8 +256,12 @@ public class ProvisionUserAction {
         }
         String body = "";
         for (int i = 0; i <= upto; ++i) {
-            final Response r = purgeUserProfile(_host, USRPRF_PREFIX + i);
-            body += r.getEntity() + "\n";
+            try{
+                final Response r = purgeUserProfile(_host, USRPRF_PREFIX + i);
+                body += r.getEntity() + "\n";
+            }catch(Exception e) {
+                body += "\n"+e.getClass()+": "+e.getMessage()+"\n";
+            }
         }
         final ResponseBuilder resp = Response.ok(body);
         resp.header("Access-Control-Allow-Origin", "*");
