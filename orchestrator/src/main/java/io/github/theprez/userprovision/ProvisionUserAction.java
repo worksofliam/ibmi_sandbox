@@ -30,7 +30,6 @@ import com.ibm.as400.access.ObjectDoesNotExistException;
 import com.ibm.as400.access.User;
 
 import io.github.theprez.dotenv_ibmi.IBMiDotEnv;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
@@ -41,7 +40,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 @Path("/api")
-@ApplicationScoped
 public class ProvisionUserAction {
     private static final int BASE_USER_PORT_NUM = 16000;
     private static String USRPRF_PREFIX = "SNDBX";
