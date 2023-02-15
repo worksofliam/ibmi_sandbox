@@ -29,6 +29,8 @@ import com.ibm.as400.access.IFSFileOutputStream;
 import com.ibm.as400.access.ObjectDoesNotExistException;
 import com.ibm.as400.access.User;
 
+import io.github.theprez.dotenv_ibmi.IBMiDotEnv;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
@@ -39,11 +41,13 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 @Path("/api")
+@ApplicationScoped
 public class ProvisionUserAction {
     private static final int BASE_USER_PORT_NUM = 16000;
     private static String USRPRF_PREFIX = "SNDBX";
 
-    private static void createOrDeleteGHBranch(final Map<String, Object> _resultsMap, final AS400 _as400, final String _branch, final boolean _isCreate) throws IOException {
+    private static void createOrDeleteGHBranch(final Map<String, Object> _resultsMap, final AS400 _as400,
+            final String _branch, final boolean _isCreate) throws IOException {
 
         final String sha = IBMiDotEnv.getDotEnv().get("SANDBOX_SHA", "3586a15cba3158bfc12219f188784f06f4f1c4ac");
         final String token = IBMiDotEnv.getDotEnv().get("SANDBOX_TOKEN");
@@ -56,18 +60,20 @@ public class ProvisionUserAction {
                 final String url = "https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs";
                 new HttpRequestor().post(true, url, body, "Authorization", "token " + token);
             } else {
-                final String url = String.format("https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs/heads/%s", _branch);
+                final String url = String
+                        .format("https://api.github.com/repos/worksofliam/ibmi_sandbox/git/refs/heads/%s", _branch);
                 new HttpRequestor().delete(true, url, "Authorization", "token " + token);
             }
             _resultsMap.put("branch", _branch);
             _resultsMap.put("gh_success", true);
-        }catch(IOException e) {
+        } catch (IOException e) {
             _resultsMap.put("gh_success", false);
             _resultsMap.put("gh_response", e.getMessage());
         }
     }
 
-    private static synchronized Map<String, Object> createUser(final AS400 _as400, final String _email, final String _host) throws Exception {
+    private static synchronized Map<String, Object> createUser(final AS400 _as400, final String _email,
+            final String _host) throws Exception {
         final LinkedHashMap<String, Object> ret = new LinkedHashMap<String, Object>();
         final String user = getUser(_as400);
         ret.put("hostname", _host);
@@ -78,7 +84,9 @@ public class ProvisionUserAction {
         ret.put("home_dir", homeDir);
         final String password = getPassword(_as400, user);
         ret.put("password", password);
-        final String command = String.format("QSYS/CRTUSRPRF USRPRF(%s) PASSWORD('%s') TEXT('%s') HOMEDIR('%s') PWDEXPITV(*NOMAX) CURLIB(%s)", user, password, desc, homeDir, user);
+        final String command = String.format(
+                "QSYS/CRTUSRPRF USRPRF(%s) PASSWORD('%s') TEXT('%s') HOMEDIR('%s') PWDEXPITV(*NOMAX) CURLIB(%s)", user,
+                password, desc, homeDir, user);
         runCmd(_as400, command);
         final AS400 userConnection = new AS400(_as400.getSystemName(), user, password);
         try {
@@ -90,7 +98,8 @@ public class ProvisionUserAction {
             final AS400JDBCDataSource ds = new AS400JDBCDataSource(userConnection);
             try (Connection conn = ds.getConnection()) {
                 final Statement stmt = conn.createStatement();
-                stmt.execute("Create schema " + user); // TODO: solve the CPA7025 problem better (currently requires reply list entries)
+                stmt.execute("Create schema " + user); // TODO: solve the CPA7025 problem better (currently requires
+                                                       // reply list entries)
                 conn.commit();
 
                 final IFSFile bash = new IFSFile(userConnection, "/QOpenSys/pkgs/bin/bash");
@@ -103,7 +112,8 @@ public class ProvisionUserAction {
                 final IFSFile dotProfile = new IFSFile(homeDirFile, ".profile");
                 final IFSFileOutputStream dotProfileStream = new IFSFileOutputStream(dotProfile);
                 try (OutputStreamWriter dotProfileWriter = new OutputStreamWriter(dotProfileStream, "UTF-8")) {
-                    writeEnvVarToDotProfile(dotProfileWriter, "PATH", "/QOpenSys/pkgs/lib/nodejs18/bin:/QOpenSys/pkgs/bin:$PATH");
+                    writeEnvVarToDotProfile(dotProfileWriter, "PATH",
+                            "/QOpenSys/pkgs/lib/nodejs18/bin:/QOpenSys/pkgs/bin:$PATH");
                     final int port = BASE_USER_PORT_NUM + Integer.valueOf(user.replaceAll("[^0-9]", ""));
                     writeEnvVarToDotProfile(dotProfileWriter, "PORT", "" + port);
                     writeEnvVarToDotProfile(dotProfileWriter, "APP_HOSTNAME", "" + _host);
@@ -112,7 +122,8 @@ public class ProvisionUserAction {
 
                 final IFSFile samplesDir = new IFSFile(homeDirFile, "samples");
                 samplesDir.mkdir();
-                final List<IFSFile> setupFiles = populateDirectoryFromGit("boilerplate", "boilerplate/stmf", samplesDir);
+                final List<IFSFile> setupFiles = populateDirectoryFromGit("boilerplate", "boilerplate/stmf",
+                        samplesDir);
                 for (final IFSFile setupFile : setupFiles) {
                     runSetupFile(setupFile, user);
                 }
@@ -142,7 +153,8 @@ public class ProvisionUserAction {
         // return UUID.randomUUID().toString().replace("-", "").substring(0, 9);
     }
 
-    private static synchronized String getUser(final AS400 as400) throws AS400SecurityException, ErrorCompletingRequestException, InterruptedException, IOException, ObjectDoesNotExistException {
+    private static synchronized String getUser(final AS400 as400) throws AS400SecurityException,
+            ErrorCompletingRequestException, InterruptedException, IOException, ObjectDoesNotExistException {
         for (int i = 1; true; ++i) {
             final String nameTry = USRPRF_PREFIX + i;
             if (10 < nameTry.length()) {
@@ -155,8 +167,10 @@ public class ProvisionUserAction {
         }
     }
 
-    private static List<IFSFile> populateDirectoryFromGit(final String _branch, final String _gitPath, final IFSFile _targetDir) throws MalformedURLException, IOException, AS400SecurityException {
-        final String gitZipUrl = String.format("https://github.com/worksofliam/ibmi_sandbox/archive/refs/heads/%s.zip", _branch);
+    private static List<IFSFile> populateDirectoryFromGit(final String _branch, final String _gitPath,
+            final IFSFile _targetDir) throws MalformedURLException, IOException, AS400SecurityException {
+        final String gitZipUrl = String.format("https://github.com/worksofliam/ibmi_sandbox/archive/refs/heads/%s.zip",
+                _branch);
         final List<IFSFile> ret = new LinkedList<IFSFile>();
         try (ZipInputStream zis = new ZipInputStream(new URL(gitZipUrl).openStream())) {
             ZipEntry entry = null;
@@ -188,7 +202,8 @@ public class ProvisionUserAction {
         return ret;
     }
 
-    private static void runCmd(final AS400 _as400, final String _command) throws AS400SecurityException, ErrorCompletingRequestException, IOException, InterruptedException, PropertyVetoException {
+    private static void runCmd(final AS400 _as400, final String _command) throws AS400SecurityException,
+            ErrorCompletingRequestException, IOException, InterruptedException, PropertyVetoException {
         final CommandCall cmd = new CommandCall(_as400, _command);
         final boolean isSuccess = cmd.run();
 
@@ -204,11 +219,13 @@ public class ProvisionUserAction {
         }
     }
 
-    private static void runSetupFile(final IFSFile _setupFile, final String _library) throws AS400SecurityException, ErrorCompletingRequestException, IOException, InterruptedException, PropertyVetoException {
+    private static void runSetupFile(final IFSFile _setupFile, final String _library) throws AS400SecurityException,
+            ErrorCompletingRequestException, IOException, InterruptedException, PropertyVetoException {
         final String fileExtension = _setupFile.getAbsolutePath().replaceAll(".*\\.", "");
         switch (fileExtension.toLowerCase()) {
             case "sql":
-                final String clCommand = String.format("RUNSQLSTM SRCSTMF('%s') COMMIT(*NONE) DFTRDBCOL(%s)", _setupFile.getAbsolutePath(), _library);
+                final String clCommand = String.format("RUNSQLSTM SRCSTMF('%s') COMMIT(*NONE) DFTRDBCOL(%s)",
+                        _setupFile.getAbsolutePath(), _library);
                 runCmd(_setupFile.getSystem(), clCommand);
                 _setupFile.delete();
                 _setupFile.getParentFile().delete();
@@ -226,23 +243,32 @@ public class ProvisionUserAction {
         }
     }
 
-    private static void writeEnvVarToDotProfile(final OutputStreamWriter _dotProfileWriter, final String _envvar, final String _val) throws IOException {
+    private static void writeEnvVarToDotProfile(final OutputStreamWriter _dotProfileWriter, final String _envvar,
+            final String _val) throws IOException {
         _dotProfileWriter.write("\n");
         _dotProfileWriter.write(_envvar + "=" + _val + "\n");
         _dotProfileWriter.write("export " + _envvar + "\n");
     }
 
+    private Connection getConnection() throws SQLException, IOException, AS400SecurityException {
+        final AS400 as400 = IBMiDotEnv.getNewSystemConnection(true);
+        AS400JDBCDataSource ds = new AS400JDBCDataSource(as400);
+        return ds.getConnection();
+    }
+
     @GET
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUserProfile(@HeaderParam("Host") final String _host, @QueryParam("email") final String _email) throws Exception {
+    public Response createUserProfile(@HeaderParam("Host") final String _host, @QueryParam("email") final String _email)
+            throws Exception {
         final AS400 as400 = IBMiDotEnv.getNewSystemConnection(true);
         as400.setGuiAvailable(false);
         try {
             if (StringUtils.isEmpty(_host)) {
                 err("Could not determine host");
             }
-            final String host = _host.startsWith("localhost") || _host.startsWith("127.0.0.1") ? as400.getSystemName() : _host.replaceAll(":.*", "");
+            final String host = _host.startsWith("localhost") || _host.startsWith("127.0.0.1") ? as400.getSystemName()
+                    : _host.replaceAll(":.*", "");
             final Map<String, Object> ret = createUser(as400, _email, host);
 
             final ResponseBuilder resp = Response.ok(ret);
@@ -256,18 +282,19 @@ public class ProvisionUserAction {
     @GET
     @Path("/purgemany")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response purgeMany(@HeaderParam("Host") final String _host, @QueryParam("upto") final String _upto) throws Exception {
+    public Response purgeMany(@HeaderParam("Host") final String _host, @QueryParam("upto") final String _upto)
+            throws Exception {
         int upto = 200;
         if (StringUtils.isNonEmpty(_upto)) {
             upto = Integer.valueOf(_upto);
         }
         String body = "";
         for (int i = 0; i <= upto; ++i) {
-            try{
+            try {
                 final Response r = purgeUserProfile(_host, USRPRF_PREFIX + i);
                 body += r.getEntity() + "\n";
-            }catch(Exception e) {
-                body += "\n"+e.getClass()+": "+e.getMessage()+"\n";
+            } catch (Exception e) {
+                body += "\n" + e.getClass() + ": " + e.getMessage() + "\n";
             }
         }
         final ResponseBuilder resp = Response.ok(body);
@@ -278,7 +305,8 @@ public class ProvisionUserAction {
     @GET
     @Path("/purge")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response purgeUserProfile(@HeaderParam("Host") final String _host, @QueryParam("usrprf") final String _usrprf) throws Exception {
+    public Response purgeUserProfile(@HeaderParam("Host") final String _host,
+            @QueryParam("usrprf") final String _usrprf) throws Exception {
         if (StringUtils.isEmpty(_usrprf)) {
             err("User profile not specified");
         }
@@ -286,7 +314,8 @@ public class ProvisionUserAction {
             err("Could not determine host");
         }
         final AS400 as400 = IBMiDotEnv.getNewSystemConnection(true);
-        final String host = _host.startsWith("localhost") || _host.startsWith("127.0.0.1") ? as400.getSystemName() : _host.replaceAll(":.*", "");
+        final String host = _host.startsWith("localhost") || _host.startsWith("127.0.0.1") ? as400.getSystemName()
+                : _host.replaceAll(":.*", "");
         final Map<String, Object> ret = new LinkedHashMap<String, Object>();
         try {
             final String usrprf = _usrprf.trim().toUpperCase();
@@ -307,7 +336,8 @@ public class ProvisionUserAction {
     @GET
     @Path("/reset")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Object> resetUserProfile(@QueryParam("usrprf") final String _base, @QueryParam("email") final String _email) throws Exception {
+    public Map<String, Object> resetUserProfile(@QueryParam("usrprf") final String _base,
+            @QueryParam("email") final String _email) throws Exception {
         // TODO: implement this method
         return null;
     }
