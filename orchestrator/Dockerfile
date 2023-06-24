@@ -35,7 +35,7 @@ COPY . ${BLDDIR}
 
 # build the web application and install into WildFly
 WORKDIR ${BLDDIR}
-RUN rm -r target && ${MAVEN}/bin/mvn package
+RUN rm -fr target && ${MAVEN}/bin/mvn package
 RUN mv target/*.war $WILDFLY/standalone/deployments
 
 # Prep the /app directory and final command, and do some clean up
