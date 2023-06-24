@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build orchestrator --file Dockerfile --tag ibmi-sandbox-orchestrator:$(date +%s)
+      run: cd orchestrator && pwd && docker build . --file Dockerfile --tag ibmi-sandbox-orchestrator:$(date +%s)
