@@ -1,0 +1,20 @@
+name: Orchestrator Docker Image CI
+
+on:
+  push:
+    branches: [ "orchestrator" ]
+  pull_request:
+    branches: [ "orchestrator" ]
+  workflow_dispatch:
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build orchestrator --file Dockerfile --tag ibmi-sandbox-orchestrator:$(date +%s)
