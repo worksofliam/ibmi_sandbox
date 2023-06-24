@@ -10,6 +10,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -270,6 +271,16 @@ public class ProvisionUserAction {
             final Map<String, Object> ret = createUser(as400, _email, host);
 
             final ResponseBuilder resp = Response.ok(ret);
+            resp.header("Access-Control-Allow-Origin", "*");
+            return resp.build();
+        }catch(Exception e) {
+            e.printStackTrace();
+            final Map<String, Object> exceptionRet = new HashMap<String,Object>(); 
+            exceptionRet.put("success", false);
+            exceptionRet.put("exception", e.getMessage());
+            
+            final ResponseBuilder resp = Response.serverError();
+            resp.entity(exceptionRet);
             resp.header("Access-Control-Allow-Origin", "*");
             return resp.build();
         } finally {
