@@ -42,4 +42,4 @@ RUN mv target/*.war $WILDFLY/standalone/deployments
 RUN mv .env /app
 WORKDIR /app
 RUN rm -r ${BLDDIR} ${MAVEN} ${DOWNLOAD}
-CMD pwd && sleep 5 && ${WILDFLY}/bin/standalone.sh -Djboss.http.port=80 -Djboss.https.port=443 -b 0.0.0.0 -bmanagement 0.0.0.0
+CMD ${WILDFLY}/bin/standalone.sh -Djboss.http.port=80 -Djboss.https.port=443 -b 0.0.0.0 -bmanagement 0.0.0.0
