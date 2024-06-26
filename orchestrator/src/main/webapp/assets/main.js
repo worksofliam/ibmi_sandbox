@@ -33,7 +33,7 @@ function loading() {
 
 				const branch = data.branch;
 
-				document.getElementById("button-codespaces").href = `https://github.com/codespaces/new?machine=basicLinux32gb&repo=587978251&ref=${branch}&devcontainer_path=.devcontainer%2Fdevcontainer.json`;
+				// document.getElementById("button-codespaces").href = `https://github.com/codespaces/new?machine=basicLinux32gb&repo=587978251&ref=${branch}&devcontainer_path=.devcontainer%2Fdevcontainer.json`;
 
 				const server = data.hostname;
 				const user = data.usrprf;
