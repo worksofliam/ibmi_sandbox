@@ -41,7 +41,7 @@ function loading() {
 
 				console.log(`'${window.location.host}'`);
 
-				document.getElementById("button-local").href = `vscode://halcyontechltd.code-for-ibmi/connect?server=${encodeURIComponent(server)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(password)}`;
+				document.getElementById("button-local").href = `vscode://halcyontechltd.code-for-ibmi/connect?server=${encodeURIComponent(server)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(password)}&save=true`;
 
 				goOnline();
 			} else if (xmlHttpReq.readyState == 4) {
