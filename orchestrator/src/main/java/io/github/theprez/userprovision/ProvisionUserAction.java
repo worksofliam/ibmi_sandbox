@@ -97,7 +97,7 @@ public class ProvisionUserAction {
             final AS400JDBCDataSource ds = new AS400JDBCDataSource(userConnection);
             try (Connection conn = ds.getConnection()) {
                 final Statement stmt = conn.createStatement();
-                stmt.execute("Create schema " + user); // TODO: solve the CPA7025 problem better (currently requires
+                stmt.execute("call qsys.create_sql_sample('" + user.toUpperCase()+"')"); // TODO: solve the CPA7025 problem better (currently requires
                                                        // reply list entries)
                 conn.commit();
 
